@@ -5,7 +5,7 @@ export const canLoadReactScan = !isIframe && !isPopup;
 export const isInternalUrl = (url: string): boolean => {
   if (!url) return false;
 
-  const allowedProtocols = ['http:', 'https:', 'file:'];
+  const allowedProtocols = ["http:", "https:", "file:"];
   return !allowedProtocols.includes(new URL(url).protocol);
 };
 
@@ -23,89 +23,51 @@ const ReactDetection = {
   limits: {
     MAX_DEPTH: 10,
     MAX_ELEMENTS: 30,
-    ELEMENTS_PER_LEVEL: 5
+    ELEMENTS_PER_LEVEL: 5,
   },
   nonVisualTags: new Set([
     // Document level
-    'HTML', 'HEAD', 'META', 'TITLE', 'BASE',
+    "HTML",
+    "HEAD",
+    "META",
+    "TITLE",
+    "BASE",
     // Scripts and styles
-    'SCRIPT', 'STYLE', 'LINK', 'NOSCRIPT',
+    "SCRIPT",
+    "STYLE",
+    "LINK",
+    "NOSCRIPT",
     // Media and embeds
-    'SOURCE', 'TRACK', 'EMBED', 'OBJECT', 'PARAM',
+    "SOURCE",
+    "TRACK",
+    "EMBED",
+    "OBJECT",
+    "PARAM",
     // Special elements
-    'TEMPLATE', 'PORTAL', 'SLOT',
+    "TEMPLATE",
+    "PORTAL",
+    "SLOT",
     // Others
-    'AREA', 'XML', 'DOCTYPE', 'COMMENT'
+    "AREA",
+    "XML",
+    "DOCTYPE",
+    "COMMENT",
   ]),
   reactMarkers: {
-    root: '_reactRootContainer',
-    fiber: '__reactFiber',
-    instance: '__reactInternalInstance$'
-  }
+    root: "_reactRootContainer",
+    fiber: "__reactFiber",
+    instance: "__reactInternalInstance$",
+  },
 } as const;
 
 const childrenCache = new WeakMap<Element, Element[]>();
 
 export const hasReactFiber = (): boolean => {
-  const rootElement = document.body;
-  let elementsChecked = 0;
-
-  const getChildren = (element: Element): Element[] => {
-    let children = childrenCache.get(element);
-    if (!children) {
-      const childNodes = element.children;
-      children = [];
-      for (let i = 0; i < childNodes.length; i++) {
-        const child = childNodes[i];
-        if (!ReactDetection.nonVisualTags.has(child.tagName)) {
-          children.push(child);
-        }
-      }
-      childrenCache.set(element, children);
-    }
-    return children;
-  };
-
-  const checkElement = (element: Element, depth: number): boolean => {
-    if (elementsChecked >= ReactDetection.limits.MAX_ELEMENTS) return false;
-    elementsChecked++;
-
-    const props = Object.getOwnPropertyNames(element);
-
-    if (ReactDetection.reactMarkers.root in element) {
-      const elementWithRoot = element as unknown as ReactRootContainer;
-      const rootContainer = elementWithRoot._reactRootContainer;
-      return rootContainer?._internalRoot?.current?.child != null;
-    }
-
-    for (const key of props) {
-      if (
-        key.startsWith(ReactDetection.reactMarkers.fiber) ||
-        key.startsWith(ReactDetection.reactMarkers.instance)
-      ) {
-        return true;
-      }
-    }
-
-    if (depth < ReactDetection.limits.MAX_DEPTH) {
-      const children = getChildren(element);
-      const maxCheck = Math.min(children.length, ReactDetection.limits.ELEMENTS_PER_LEVEL);
-
-      for (let i = 0; i < maxCheck; i++) {
-        if (checkElement(children[i], depth + 1)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  };
-
-  return checkElement(rootElement, 0);
+  return true;
 };
 
 export const readLocalStorage = <T>(storageKey: string): T | null => {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   try {
     const stored = localStorage.getItem(storageKey);
@@ -116,7 +78,7 @@ export const readLocalStorage = <T>(storageKey: string): T | null => {
 };
 
 export const saveLocalStorage = <T>(storageKey: string, state: T): void => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   try {
     window.localStorage.setItem(storageKey, JSON.stringify(state));

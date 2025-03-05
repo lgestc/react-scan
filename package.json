@@ -1,6 +1,7 @@
 {
   "name": "root",
   "private": true,
+  "version": "0.0.0",
   "scripts": {
     "build": "WORKSPACE_BUILD=true node scripts/workspace.mjs build",
     "postbuild": "node scripts/version-warning.mjs",
